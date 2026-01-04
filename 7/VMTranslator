@@ -1,0 +1,21 @@
+void writeArithmetic(string command) {
+    if (command == "add") {
+        output << "@SP\n"
+               << "AM=M-1\n" // 取得第二個運算元
+               << "D=M\n"
+               << "A=A-1\n"   // 指向第一個運算元
+               << "M=D+M\n";  // 相加後存回
+    }
+    // ... 其他如 sub, neg, eq ...
+}
+void writePushPop(string command, string segment, int index) {
+    if (command == "C_PUSH" && segment == "constant") {
+        output << "@" << index << "\n"
+               << "D=A\n"
+               << "@SP\n"
+               << "A=M\n"
+               << "M=D\n"
+               << "@SP\n"
+               << "M=M+1\n";
+    }
+}
