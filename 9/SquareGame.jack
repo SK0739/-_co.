@@ -1,0 +1,153 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/09/Square/SquareGame.jack
+/**
+ * Implements the Square game.
+ * This simple game allows the user to move a black square around
+ * the screen, and change the square's size during the movement.
+ * When the game starts, a square of 30 by 30 pixels is shown at the
+ * top-left corner of the screen. The user controls the square as follows.
+ * The 4 arrow keys are used to move the square up, down, left, and right.
+ * The 'z' and 'x' keys are used, respectively, to decrement and increment
+ * the square's size. The 'q' key is used to quit the game.
+ */
+class SquareGame {
+    field int x, y; // 方塊的座標
+    field int size; // 方塊的大小
+
+    /** 建構子：初始化方塊位置 */
+    constructor SquareGame new() {
+        let x = 0;
+        let y = 0;
+        let size = 30;
+        do draw();
+        return this;
+    }
+
+    /** 記憶體回收 */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** 畫出方塊 */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    /** 擦除方塊 */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    /** 遊戲主迴圈 */
+    method void run() {
+        var char key;
+        var boolean exit;
+        let exit = false;
+
+        while (~exit) {
+            // 等待按鍵
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+
+            if (key = 81)  { let exit = true; }     // Q 鍵退出
+            if (key = 131) { do moveUp(); }         // 上
+            if (key = 133) { do moveDown(); }       // 下
+            if (key = 130) { do moveLeft(); }       // 左
+            if (key = 132) { do moveRight(); }      // 右
+
+            // 等待放開按鍵
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
+        }
+        return;
+    }
+
+    method void moveUp() {
+        if (y > 1) {
+            do erase();
+            let y = y - 2;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveDown() {
+        if ((y + size) < 254) {
+            do erase();
+            let y = y + 2;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveLeft() {
+        if (x > 1) {
+            do erase();
+            let x = x - 2;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveRight() {
+        if ((x + size) < 510) {
+            do erase();
+            let x = x + 2;
+            do draw();
+        }
+        return;
+    }
+}
+
+   /** Moves the square in the current direction. */
+   method void moveSquare() {
+      if (direction = 1) { do square.moveUp(); }
+      if (direction = 2) { do square.moveDown(); }
+      if (direction = 3) { do square.moveLeft(); }
+      if (direction = 4) { do square.moveRight(); }
+      do Sys.wait(5);  // delays the next movement
+      return;
+   }
+
+   /** Runs the game: handles the user's inputs and moves the square accordingly */
+   method void run() {
+      var char key;  // the key currently pressed by the user
+      var boolean exit;
+      let exit = false;
+      
+      while (~exit) {
+         // waits for a key to be pressed
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+            do moveSquare();
+         }
+         if (key = 81)  { let exit = true; }     // q key
+         if (key = 90)  { do square.decSize(); } // z key
+         if (key = 88)  { do square.incSize(); } // x key
+         if (key = 131) { let direction = 1; }   // up arrow
+         if (key = 133) { let direction = 2; }   // down arrow
+         if (key = 130) { let direction = 3; }   // left arrow
+         if (key = 132) { let direction = 4; }   // right arrow
+
+         // waits for the key to be released
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            do moveSquare();
+         }
+     } // while
+     return;
+   }
+}
+
+
+
+
